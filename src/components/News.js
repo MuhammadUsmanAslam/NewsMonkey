@@ -17,8 +17,12 @@ const News = (props) => {
 	};
 
 	const fetchMoreData = async () => {
+		let url = `https://newsapi.org/v2/top-headlines?country=${
+			props.country
+		}&pageSize=${props.pageSize}&page=${page + 1}&category=${
+			props.category
+		}&apiKey=${props.apiKey}`;
 		await setPage(page + 1);
-		let url = `https://newsapi.org/v2/top-headlines?country=${props.country}&pageSize=${props.pageSize}&page=${page}&category=${props.category}&apiKey=${props.apiKey}`;
 		let data = await (await fetch(url)).json();
 		setArticles(articles.concat(data.articles));
 		setTotalResults(data.totalResults);
@@ -37,6 +41,7 @@ const News = (props) => {
 
 	useEffect(() => {
 		updateNews();
+		document.title = `${capitalizeFirstLetter(props.category)} - NewsMonkey`;
 	}, []);
 
 	return (

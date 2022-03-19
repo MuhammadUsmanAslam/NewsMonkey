@@ -8,7 +8,7 @@ const NavBar = () => {
 			style={{ textTransform: "capitalize", position: "sticky", top: "0" }}
 		>
 			<div className="container-fluid">
-				<a className="navbar-brand" to="/">
+				<a className="navbar-brand" href="/">
 					NewsMonkey
 				</a>
 				<button
