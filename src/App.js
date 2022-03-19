@@ -6,7 +6,10 @@ import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 
 export class App extends Component {
 	pageSize = 15;
+	// apiKey = "dfhjkhgvbjkdfgjkhdfjklh";
 	render() {
+		let apiKey = process.env.REACT_APP_NEWS_API;
+		// let apiKey = "ec6052189db8431aa30e2d6bc098deed";
 		return (
 			<div className="app">
 				<Router>
@@ -18,6 +21,7 @@ export class App extends Component {
 								key="general"
 								pageSize={this.pageSize}
 								country="us"
+								apiKey={apiKey}
 								category="general"
 							/>
 						</Route>
@@ -26,6 +30,7 @@ export class App extends Component {
 								key="business"
 								pageSize={this.pageSize}
 								country="us"
+								apiKey={apiKey}
 								category="business"
 							/>
 						</Route>
@@ -34,6 +39,7 @@ export class App extends Component {
 								key="entertainment"
 								pageSize={this.pageSize}
 								country="us"
+								apiKey={apiKey}
 								category="entertainment"
 							/>
 						</Route>
@@ -42,6 +48,7 @@ export class App extends Component {
 								key="health"
 								pageSize={this.pageSize}
 								country="us"
+								apiKey={apiKey}
 								category="health"
 							/>
 						</Route>
@@ -50,6 +57,7 @@ export class App extends Component {
 								key="science"
 								pageSize={this.pageSize}
 								country="us"
+								apiKey={apiKey}
 								category="science"
 							/>
 						</Route>
@@ -58,6 +66,7 @@ export class App extends Component {
 								key="sports"
 								pageSize={this.pageSize}
 								country="us"
+								apiKey={apiKey}
 								category="sports"
 							/>
 						</Route>
@@ -66,6 +75,7 @@ export class App extends Component {
 								key="technology"
 								pageSize={this.pageSize}
 								country="us"
+								apiKey={apiKey}
 								category="technology"
 							/>
 						</Route>

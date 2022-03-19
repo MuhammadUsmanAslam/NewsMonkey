@@ -3,6 +3,8 @@ import NewsItem from "./NewsItem";
 import spinner from "./loading-spinner.gif";
 import "./News.css";
 import PropTypes from "prop-types";
+import InfiniteScroll from "react-infinite-scroll-component";
+import LoadingBar from "react-top-loading-bar";
 
 export class News extends Component {
 	// articles = [
@@ -82,6 +84,7 @@ export class News extends Component {
 		this.state = {
 			articles: this.articles,
 			loading: false,
+			progress: 0,
 			page: 1,
 		};
 		document.title = `${this.capitalizeFirstLetter(
@@ -105,6 +108,22 @@ export class News extends Component {
 		return string.charAt(0).toUpperCase() + string.slice(1);
 	};
 
+	fetchMoreData = async () => {
+		this.setState({
+			page: this.state.page + 1,
+			//  progress: 20
+		});
+		// this.setState({ articles: this.articles });
+		let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&pageSize=${this.props.pageSize}&page=${this.state.page}&category=${this.props.category}&apiKey=${this.props.apiKey}`;
+		// this.setState({ progress: 70 });
+		let data = await (await fetch(url)).json();
+		this.setState({
+			articles: this.state.articles.concat(data.articles),
+			totalResults: data.totalResults,
+			// progress: 100,
+		});
+	};
+
 	async componentDidMount() {
 		this.updateNews();
 	}
@@ -112,22 +131,35 @@ export class News extends Component {
 	render() {
 		console.log("render");
 		return (
-			<div className="container my-3">
-				<div className="row text-center">
-					<h2 className="h" style={{ margin: "35px 0px" }}>
-						NewsMonkey - Top Headlines From:
-						{this.capitalizeFirstLetter(this.props.category)} Category
-					</h2>
-				</div>
-				{this.state.articles.length <= 0 ? (
-					<div className="text-center">
-						<img
-							src={spinner}
-							alt="Loading"
-							style={{ height: 250, width: 250 }}
-						/>
+			<InfiniteScroll
+				dataLength={this.state.articles.length}
+				next={this.fetchMoreData}
+				hasMore={this.state.articles.length !== this.state.totalResults}
+				loader={
+					<div className="container">
+						<div className="text-center">
+							<img
+								src={spinner}
+								alt="Loading"
+								style={{ height: 250, width: 250 }}
+							/>
+						</div>
 					</div>
-				) : (
+				}
+			>
+				<LoadingBar
+					color="#f11946"
+					progress={this.state.progress}
+					onLoaderFinished={() => this.setState({ progress: 100 })}
+				/>
+				<div className="container ">
+					<div className="row text-center">
+						<h2 className="h" style={{ margin: "35px 0px" }}>
+							NewsMonkey - Top Headlines From:
+							{this.capitalizeFirstLetter(this.props.category)} Category
+						</h2>
+					</div>
+
 					<div className="row">
 						{this.state.articles.map((article, index) => {
 							return (
@@ -143,50 +175,82 @@ export class News extends Component {
 							);
 						})}
 					</div>
-				)}
+					{/* {this.state.articles.length <= 0 ? (
+						<div className="text-center">
+							<img
+								src={spinner}
+								alt="Loading"
+								style={{ height: 250, width: 250 }}
+							/>
+						</div>
+					) : (
+						<div className="row">
+							{this.state.articles.map((article, index) => {
+								return (
+									<NewsItem
+										key={index}
+										title={article.title ? article.title : ""}
+										description={article.description ? article.description : ""}
+										imageUrl={article.urlToImage}
+										newsUrl={article.url}
+										author={article.author}
+										date={article.publishedAt}
+									/>
+								);
+							})}
+						</div>
+					)} */}
 
-				<div className="container d-flex justify-content-between">
-					<button
-						type="button"
-						className="btn btn-success m-2"
-						disabled={this.state.page <= 1 ? true : false}
-						onClick={async () => {
-							await this.setState({
-								page: this.state.page - 1,
-							});
-							this.updateNews();
-						}}
-					>
-						&larr; Previous
-					</button>
-					<button
-						type="button"
-						className="btn btn-success m-2"
-						disabled={
-							this.state.page + 1 >
-							Math.ceil(this.state.totalResults / this.props.pageSize)
-								? true
-								: false
-						}
-						onClick={async () => {
-							await this.setState({
-								page: this.state.page + 1,
-							});
-							this.updateNews();
-						}}
-					>
-						Next &rarr;
-					</button>
+					{/* <div className="container d-flex justify-content-between">
+						<button
+							type="button"
+							className="btn btn-success m-2"
+							disabled={this.state.page <= 1 ? true : false}
+							onClick={async () => {
+								await this.setState({
+									page: this.state.page - 1,
+								});
+								this.updateNews();
+							}}
+						>
+							&larr; Previous
+						</button>
+						<button
+							type="button"
+							className="btn btn-success m-2"
+							disabled={
+								this.state.page + 1 >
+								Math.ceil(this.state.totalResults / this.props.pageSize)
+									? true
+									: false
+							}
+							onClick={async () => {
+								await this.setState({
+									page: this.state.page + 1,
+								});
+								this.updateNews();
+							}}
+						>
+							Next &rarr;
+						</button>
+					</div> */}
 				</div>
-			</div>
+			</InfiniteScroll>
 		);
 	}
 
 	updateNews = async () => {
-		this.setState({ articles: this.articles });
-		let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&pageSize=${this.props.pageSize}&page=${this.state.page}&category=${this.props.category}&apiKey=ec6052189db8431aa30e2d6bc098deed`;
+		this.setState({ articles: this.articles, progress: 20 });
+		// this.setState({ page: this.state.page + 1, progress: 20 });
+
+		let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&pageSize=${this.props.pageSize}&page=${this.state.page}&category=${this.props.category}&apiKey=${this.props.apiKey}`;
+		this.setState({ progress: 70 });
 		let data = await (await fetch(url)).json();
-		this.setState({ articles: data.articles, totalResults: data.totalResults });
+		this.setState({
+			articles: data.articles,
+			totalResults: data.totalResults,
+			progress: 100,
+		});
 	};
 }
 
