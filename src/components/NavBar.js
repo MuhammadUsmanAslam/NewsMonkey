@@ -5,7 +5,7 @@ const NavBar = () => {
 	return (
 		<nav
 			className="navbar navbar-expand-lg navbar-light bg-light"
-			style={{ textTransform: "capitalize" }}
+			style={{ textTransform: "capitalize", position: "sticky", top: "0" }}
 		>
 			<div className="container-fluid">
 				<a className="navbar-brand" to="/">
